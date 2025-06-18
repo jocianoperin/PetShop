@@ -72,15 +72,33 @@ export default function App() {
   }
 
   const handleMobileProfileToggle = () => {
-    setMobileProfileOpen(!mobileProfileOpen)
-    setMobileNotificationsOpen(false)
-    setMobileMenuOpen(false)
+    setMobileProfileOpen((open: boolean) => {
+      if (!open) {
+        setMobileMenuOpen(false)
+        setMobileNotificationsOpen(false)
+      }
+      return !open
+    })
   }
 
   const handleMobileMenuToggle = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-    setMobileProfileOpen(false)
-    setMobileNotificationsOpen(false)
+    setMobileMenuOpen((open: boolean) => {
+      if (!open) {
+        setMobileProfileOpen(false)
+        setMobileNotificationsOpen(false)
+      }
+      return !open
+    })
+  }
+
+  const handleMobileNotificationsToggle = () => {
+    setMobileNotificationsOpen((open: boolean) => {
+      if (!open) {
+        setMobileMenuOpen(false)
+        setMobileProfileOpen(false)
+      }
+      return !open
+    })
   }
 
   const handlePageChange = (page: string) => {
@@ -239,7 +257,7 @@ export default function App() {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 unreadNotifications={unreadNotifications}
-                onNotificationsToggle={toggleNotifications}
+                onNotificationsToggle={handleMobileNotificationsToggle}
                 onProfileToggle={handleMobileProfileToggle}
                 isOpen={mobileMenuOpen}
                 onToggle={handleMobileMenuToggle}
@@ -257,7 +275,7 @@ export default function App() {
 
               <MobileNotificationsPanel
                 isOpen={mobileNotificationsOpen}
-                onToggle={() => setMobileNotificationsOpen(!mobileNotificationsOpen)}
+                onToggle={handleMobileNotificationsToggle}
               />
             </div>
 

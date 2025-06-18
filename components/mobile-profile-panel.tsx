@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -26,7 +27,7 @@ export function MobileProfilePanel({ isOpen, onToggle, onLogout, onNavigate }: M
       <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onToggle} />
 
       {/* Profile Panel */}
-      <div className="fixed bottom-16 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 lg:hidden max-h-[70vh] overflow-y-auto">
+      <div className="fixed bottom-20 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 lg:hidden max-h-[70vh] overflow-y-auto">
         <div className="p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">

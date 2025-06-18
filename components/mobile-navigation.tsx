@@ -1,4 +1,5 @@
 "use client"
+import React from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -8,7 +9,7 @@ interface MobileNavigationProps {
   currentPage: string
   onPageChange: (page: string) => void
   unreadNotifications: number
-  onNotificationsToggle: () => void
+  handleMobileNotificationsToggle: () => void
   onProfileToggle: () => void
   isOpen: boolean
   onToggle: () => void
@@ -29,7 +30,7 @@ export function MobileNavigation({
   currentPage,
   onPageChange,
   unreadNotifications,
-  onNotificationsToggle,
+  handleMobileNotificationsToggle,
   onProfileToggle,
   isOpen,
   onToggle,
@@ -77,7 +78,7 @@ export function MobileNavigation({
           <Button
             variant="ghost"
             className="h-full rounded-none flex-col gap-1 text-xs relative"
-            onClick={onNotificationsToggle}
+            onClick={handleMobileNotificationsToggle}
           >
             <div className="relative">
               <Bell className="w-5 h-5" />

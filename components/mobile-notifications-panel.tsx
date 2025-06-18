@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -109,23 +110,23 @@ export function MobileNotificationsPanel({ isOpen, onToggle }: MobileNotificatio
   const [notificationsList, setNotificationsList] = useState(notifications)
   const [filter, setFilter] = useState<"all" | "unread">("all")
 
-  const unreadCount = notificationsList.filter((n) => !n.read).length
+  const unreadCount = notificationsList.filter((n: any) => !n.read).length
 
   const markAsRead = (id: number) => {
-    setNotificationsList((prev) =>
-      prev.map((notification) => (notification.id === id ? { ...notification, read: true } : notification)),
+    setNotificationsList((prev: any[]) =>
+      prev.map((notification: any) => (notification.id === id ? { ...notification, read: true } : notification)),
     )
   }
 
   const markAllAsRead = () => {
-    setNotificationsList((prev) => prev.map((notification) => ({ ...notification, read: true })))
+    setNotificationsList((prev: any[]) => prev.map((notification: any) => ({ ...notification, read: true })))
   }
 
   const removeNotification = (id: number) => {
-    setNotificationsList((prev) => prev.filter((notification) => notification.id !== id))
+    setNotificationsList((prev: any[]) => prev.filter((notification: any) => notification.id !== id))
   }
 
-  const filteredNotifications = notificationsList.filter((n) => (filter === "unread" ? !n.read : true))
+  const filteredNotifications = notificationsList.filter((n: any) => (filter === "unread" ? !n.read : true))
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -148,7 +149,7 @@ export function MobileNotificationsPanel({ isOpen, onToggle }: MobileNotificatio
       <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onToggle} />
 
       {/* Notifications Panel */}
-      <div className="fixed bottom-16 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 lg:hidden max-h-[70vh] flex flex-col">
+      <div className="fixed bottom-20 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 lg:hidden max-h-[70vh] flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">

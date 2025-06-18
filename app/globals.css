@@ -267,6 +267,23 @@
   .mobile-content {
     padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
 
 /* Custom scrollbar for mobile */
