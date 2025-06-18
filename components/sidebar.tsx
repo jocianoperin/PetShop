@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import {
   Calendar,
@@ -10,18 +11,16 @@ import {
   Settings,
   FileText,
   Megaphone,
-  Menu,
-  X,
-  LogOut,
   DollarSign,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 
 interface SidebarProps {
   currentPage: string
   onPageChange: (page: string) => void
-  onLogout: () => void
-  isOpen: boolean
-  onToggle: () => void
+  isCollapsed: boolean
+  onToggleCollapse: () => void
 }
 
 const menuItems = [
@@ -35,79 +34,97 @@ const menuItems = [
   { id: "configuracoes", label: "Configurações", icon: Settings },
 ]
 
-export function Sidebar({ currentPage, onPageChange, onLogout, isOpen, onToggle }: SidebarProps) {
+export function Sidebar({ currentPage, onPageChange, isCollapsed, onToggleCollapse }: SidebarProps) {
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onToggle} />}
-
-      {/* Mobile menu button */}
-      <Button variant="ghost" size="icon" className="fixed top-4 left-4 z-50 lg:hidden rounded-2xl" onClick={onToggle}>
-        {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
-
-      {/* Sidebar */}
+    <TooltipProvider>
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 lg:relative lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full",
+          "bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 flex flex-col",
+          isCollapsed ? "w-16" : "w-64",
         )}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-orange-500 rounded-2xl flex items-center justify-center">
-                <PawPrint className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="font-bold text-gray-900 dark:text-white">Pet Shop</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Management Suite</p>
-              </div>
+          <div className={cn("p-4 border-b border-gray-200 dark:border-gray-800", isCollapsed && "px-2")}>
+            <div className="flex items-center justify-between">
+              {!isCollapsed && (
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-orange-500 rounded-2xl flex items-center justify-center">
+                    <PawPrint className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-gray-900 dark:text-white">Pet Shop</h2>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Management Suite</p>
+                  </div>
+                </div>
+              )}
+              {isCollapsed && (
+                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto">
+                  <PawPrint className="w-5 h-5 text-white" />
+                </div>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onToggleCollapse}
+                className="rounded-xl hidden lg:flex"
+                title={isCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
+              >
+                {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+              </Button>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className={cn("flex-1 p-2 space-y-1", isCollapsed && "px-1")}>
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = currentPage === item.id
 
-              return (
+              const buttonContent = (
                 <Button
                   key={item.id}
                   variant={isActive ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start rounded-2xl h-12 text-left font-medium transition-all duration-200",
+                    "w-full transition-all duration-200 rounded-2xl",
+                    isCollapsed ? "h-12 px-0" : "h-12 justify-start px-4",
                     isActive
                       ? "bg-gradient-to-r from-cyan-500 to-orange-500 text-white shadow-lg"
                       : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300",
                   )}
-                  onClick={() => {
-                    onPageChange(item.id)
-                    if (window.innerWidth < 1024) onToggle()
-                  }}
+                  onClick={() => onPageChange(item.id)}
                 >
-                  <Icon className="w-5 h-5 mr-3" />
-                  {item.label}
+                  <Icon className={cn("w-5 h-5", !isCollapsed && "mr-3")} />
+                  {!isCollapsed && <span className="font-medium">{item.label}</span>}
                 </Button>
               )
+
+              if (isCollapsed) {
+                return (
+                  <Tooltip key={item.id}>
+                    <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
+                    <TooltipContent side="right" className="rounded-xl">
+                      <p>{item.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              }
+
+              return buttonContent
             })}
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-2xl h-12 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-              onClick={onLogout}
-            >
-              <LogOut className="w-5 h-5 mr-3" />
-              Sair
-            </Button>
+          <div className={cn("p-2 border-t border-gray-200 dark:border-gray-800", isCollapsed && "px-1")}>
+            {!isCollapsed && (
+              <div className="p-3 rounded-2xl bg-gradient-to-r from-cyan-50 to-orange-50 dark:from-cyan-900/20 dark:to-orange-900/20">
+                <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Versão 1.0.0</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">© 2025 Pet Shop Suite</p>
+              </div>
+            )}
           </div>
         </div>
       </aside>
-    </>
+    </TooltipProvider>
   )
 }
