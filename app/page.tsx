@@ -13,7 +13,13 @@ import { ConfiguracoesPage } from "@/components/configuracoes-page"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 import { NotificationsPanel } from "@/components/notifications-panel"
+import { MobileNavigation } from "@/components/mobile-navigation"
+import { MobileHeader } from "@/components/mobile-header"
+import { MobileProfilePanel } from "@/components/mobile-profile-panel"
+import { MobileNotificationsPanel } from "@/components/mobile-notifications-panel"
+import { MobileFab } from "@/components/mobile-fab"
 import { ThemeProvider } from "@/components/theme-provider"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -22,6 +28,13 @@ export default function App() {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [notificationsPinned, setNotificationsPinned] = useState(false)
   const [unreadNotifications, setUnreadNotifications] = useState(6)
+
+  // Mobile states
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false)
+  const [mobileNotificationsOpen, setMobileNotificationsOpen] = useState(false)
+
+  const isMobile = useMediaQuery("(max-width: 1024px)")
 
   const handleLogin = (username: string, password: string) => {
     if (username === "admin" && password === "123") {
@@ -36,16 +49,69 @@ export default function App() {
     setSidebarCollapsed(false)
     setNotificationsOpen(false)
     setNotificationsPinned(false)
+    setMobileMenuOpen(false)
+    setMobileProfileOpen(false)
+    setMobileNotificationsOpen(false)
   }
 
   const toggleNotifications = () => {
-    setNotificationsOpen(!notificationsOpen)
+    if (isMobile) {
+      setMobileNotificationsOpen(!mobileNotificationsOpen)
+      setMobileProfileOpen(false)
+      setMobileMenuOpen(false)
+    } else {
+      setNotificationsOpen(!notificationsOpen)
+    }
   }
 
   const toggleNotificationsPin = () => {
     setNotificationsPinned(!notificationsPinned)
     if (!notificationsPinned) {
       setNotificationsOpen(true)
+    }
+  }
+
+  const handleMobileProfileToggle = () => {
+    setMobileProfileOpen(!mobileProfileOpen)
+    setMobileNotificationsOpen(false)
+    setMobileMenuOpen(false)
+  }
+
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(!mobileMenuOpen)
+    setMobileProfileOpen(false)
+    setMobileNotificationsOpen(false)
+  }
+
+  const handlePageChange = (page: string) => {
+    setCurrentPage(page)
+    // Close mobile panels when navigating
+    if (isMobile) {
+      setMobileMenuOpen(false)
+      setMobileProfileOpen(false)
+      setMobileNotificationsOpen(false)
+    }
+  }
+
+  const handleFabAction = (action: string) => {
+    // Handle FAB actions based on the action type
+    switch (action) {
+      case "new-appointment":
+        setCurrentPage("agenda")
+        // Here you would typically open a new appointment dialog
+        break
+      case "new-pet":
+        setCurrentPage("pets")
+        // Here you would typically open a new pet dialog
+        break
+      case "new-checkin":
+        setCurrentPage("hotel")
+        // Here you would typically open a new check-in dialog
+        break
+      case "new-transaction":
+        setCurrentPage("financeiro")
+        // Here you would typically open a new transaction dialog
+        break
     }
   }
 
@@ -72,10 +138,21 @@ export default function App() {
     }
   }
 
-  // Close notifications panel when clicking outside (only if not pinned)
+  // Close mobile panels when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!notificationsPinned && notificationsOpen) {
+      if (isMobile) {
+        const target = event.target as Element
+        if (
+          !target.closest("[data-mobile-panel]") &&
+          !target.closest("[data-mobile-trigger]") &&
+          !target.closest("[data-mobile-fab]")
+        ) {
+          setMobileMenuOpen(false)
+          setMobileProfileOpen(false)
+          setMobileNotificationsOpen(false)
+        }
+      } else if (!notificationsPinned && notificationsOpen) {
         const target = event.target as Element
         if (!target.closest("[data-notifications-panel]") && !target.closest("[data-notifications-trigger]")) {
           setNotificationsOpen(false)
@@ -85,7 +162,16 @@ export default function App() {
 
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [notificationsOpen, notificationsPinned])
+  }, [isMobile, notificationsOpen, notificationsPinned])
+
+  // Auto-collapse sidebar on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarCollapsed(true)
+      setNotificationsOpen(false)
+      setNotificationsPinned(false)
+    }
+  }, [isMobile])
 
   if (!isLoggedIn) {
     return (
@@ -98,39 +184,89 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
-        {/* Sidebar */}
-        <Sidebar
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          isCollapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
+        {/* Desktop Sidebar */}
+        {!isMobile && (
+          <Sidebar
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            isCollapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
+        )}
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Header */}
-          <Header
-            onSidebarToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-            onNotificationsToggle={toggleNotifications}
-            unreadNotifications={unreadNotifications}
-            onLogout={handleLogout}
-          />
+          {/* Desktop Header */}
+          {!isMobile && (
+            <Header
+              onSidebarToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+              onNotificationsToggle={toggleNotifications}
+              unreadNotifications={unreadNotifications}
+              onLogout={handleLogout}
+            />
+          )}
+
+          {/* Mobile Header */}
+          {isMobile && <MobileHeader currentPage={currentPage} />}
 
           {/* Page Content */}
-          <main className={`flex-1 overflow-auto transition-all duration-300 ${notificationsPinned ? "mr-80" : ""}`}>
+          <main
+            className={`flex-1 overflow-auto transition-all duration-300 ${
+              !isMobile && notificationsPinned ? "mr-80" : ""
+            } ${isMobile ? "pb-16" : ""}`}
+          >
             {renderPage()}
           </main>
         </div>
 
-        {/* Notifications Panel */}
-        <div data-notifications-panel>
-          <NotificationsPanel
-            isOpen={notificationsOpen}
-            onToggle={toggleNotifications}
-            isPinned={notificationsPinned}
-            onPin={toggleNotificationsPin}
-          />
-        </div>
+        {/* Desktop Notifications Panel */}
+        {!isMobile && (
+          <div data-notifications-panel>
+            <NotificationsPanel
+              isOpen={notificationsOpen}
+              onToggle={toggleNotifications}
+              isPinned={notificationsPinned}
+              onPin={toggleNotificationsPin}
+            />
+          </div>
+        )}
+
+        {/* Mobile Navigation */}
+        {isMobile && (
+          <>
+            <div data-mobile-trigger>
+              <MobileNavigation
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                unreadNotifications={unreadNotifications}
+                onNotificationsToggle={toggleNotifications}
+                onProfileToggle={handleMobileProfileToggle}
+                isOpen={mobileMenuOpen}
+                onToggle={handleMobileMenuToggle}
+              />
+            </div>
+
+            {/* Mobile Panels */}
+            <div data-mobile-panel>
+              <MobileProfilePanel
+                isOpen={mobileProfileOpen}
+                onToggle={handleMobileProfileToggle}
+                onLogout={handleLogout}
+                onNavigate={handlePageChange}
+              />
+
+              <MobileNotificationsPanel
+                isOpen={mobileNotificationsOpen}
+                onToggle={() => setMobileNotificationsOpen(!mobileNotificationsOpen)}
+              />
+            </div>
+
+            {/* Mobile FAB */}
+            <div data-mobile-fab>
+              <MobileFab currentPage={currentPage} onAction={handleFabAction} />
+            </div>
+          </>
+        )}
       </div>
     </ThemeProvider>
   )

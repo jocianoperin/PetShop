@@ -223,3 +223,273 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Mobile-specific styles */
+@media (max-width: 1024px) {
+  /* Ensure mobile panels are above everything */
+  .mobile-panel {
+    z-index: 9999;
+  }
+
+  /* Prevent body scroll when mobile panels are open */
+  .mobile-panel-open {
+    overflow: hidden;
+  }
+
+  /* Mobile-optimized scrolling */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Mobile touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Mobile safe areas */
+  .mobile-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .mobile-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Mobile navigation bar */
+  .mobile-nav-bar {
+    height: 64px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Mobile content spacing */
+  .mobile-content {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Custom scrollbar for mobile */
+@media (max-width: 1024px) {
+  .scrollbar-thin {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mobile animations */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Mobile FAB animations */
+@keyframes fab-scale {
+  0% {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.fab-animate {
+  animation: fab-scale 0.3s ease-out;
+}
+
+/* Mobile panel backdrop */
+.mobile-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Mobile swipe indicators */
+.swipe-indicator {
+  position: relative;
+}
+
+.swipe-indicator::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background-color: rgb(203 213 225);
+  border-radius: 2px;
+}
+
+.dark .swipe-indicator::before {
+  background-color: rgb(71 85 105);
+}
+
+/* Mobile notification badges */
+.mobile-notification-badge {
+  animation: bounce-in 0.3s ease-out;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Mobile card hover effects */
+@media (max-width: 1024px) {
+  .mobile-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease-out;
+  }
+}
+
+/* Mobile bottom sheet */
+.mobile-bottom-sheet {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dark .mobile-bottom-sheet {
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile pull-to-refresh */
+.mobile-pull-refresh {
+  overscroll-behavior-y: contain;
+}
+
+/* Mobile haptic feedback simulation */
+.mobile-haptic:active {
+  transform: scale(0.95);
+  transition: transform 0.05s ease-out;
+}
+
+/* Mobile accessibility improvements */
+@media (max-width: 1024px) {
+  .focus-visible\:ring-2:focus-visible {
+    outline: 3px solid rgb(6 182 212);
+    outline-offset: 2px;
+  }
+
+  /* Larger touch targets for better accessibility */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  /* Better contrast for mobile */
+  .text-gray-500 {
+    @apply text-gray-600;
+  }
+
+  .dark .text-gray-500 {
+    @apply text-gray-400;
+  }
+}
+
+/* Mobile landscape optimizations */
+@media (max-width: 1024px) and (orientation: landscape) {
+  .mobile-nav-bar {
+    height: 56px;
+  }
+
+  .mobile-content {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-header {
+    height: 48px;
+  }
+}
+
+/* Mobile performance optimizations */
+@media (max-width: 1024px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* GPU acceleration for smooth animations */
+  .mobile-panel,
+  .mobile-nav-bar,
+  .mobile-fab {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
+
+/* Mobile dark mode optimizations */
+@media (max-width: 1024px) {
+  .dark {
+    /* Deeper blacks for OLED screens */
+    --background: 0 0% 0%;
+    --card: 0 0% 3%;
+    --popover: 0 0% 3%;
+  }
+}
+
+/* Mobile print styles */
+@media print and (max-width: 1024px) {
+  .mobile-nav-bar,
+  .mobile-fab,
+  .mobile-panel {
+    display: none !important;
+  }
+
+  .mobile-content {
+    padding-bottom: 0 !important;
+  }
+}
